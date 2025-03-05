@@ -114,21 +114,17 @@ ORDER BY category;
 
 7. **Write a SQL query to calculate the average sale for each month. Find out best selling month in each year**:
 ```sql
-SELECT 
-       year,
-       month,
-    avg_sale
-FROM 
-(    
-SELECT 
-    EXTRACT(YEAR FROM sale_date) as year,
-    EXTRACT(MONTH FROM sale_date) as month,
-    AVG(total_sale) as avg_sale,
-    RANK() OVER(PARTITION BY EXTRACT(YEAR FROM sale_date) ORDER BY AVG(total_sale) DESC) as rank
-FROM retail_sales
-GROUP BY 1, 2
-) as t1
-WHERE rank = 1
+SELECT EXTRACT(year from sale_date) as year, EXTRACT(month from sale_date)as month, AVG(total_sale) as avg_sales from sales
+group by EXTRACT(year from sale_date),EXTRACT(month from sale_date)
+order by EXTRACT(year from sale_date),EXTRACT(month from sale_date);
+
+with cte as(
+SELECT EXTRACT(year from sale_date) as year, EXTRACT(month from sale_date)as month, AVG(total_sale) as avg_sales from sales
+group by EXTRACT(year from sale_date),EXTRACT(month from sale_date)
+order by EXTRACT(year from sale_date),EXTRACT(month from sale_date))
+SELECT year, max(avg_sales) from cte
+group by year;
+
 ```
 
 8. **Write a SQL query to find the top 5 customers based on the highest total sales **:
